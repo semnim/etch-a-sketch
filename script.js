@@ -40,6 +40,7 @@ function clearGrid(e) {
   grid.innerHTML = "";
   initGrid();
   eraser.classList.remove("active");
+  backgroundColor = colorPicker.value;
 }
 clearButton.addEventListener("click", clearGrid);
 
@@ -53,8 +54,8 @@ colorPicker.onchange = function () {
 
 // Erase
 eraser.addEventListener("click", () => {
-    backgroundColor = "white";
-    eraser.classList.add("active");
+    backgroundColor = "var(--primary-light)";
+    eraser.classList.toggle("active");
 })
 
 // Random color
