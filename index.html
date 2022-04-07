@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Etch-A-Sketch</title>
+  </head>
+  <body>
+    <header>
+      <h1>Etch-A-Sketch</h1>
+    </header>
+    <main class="main">
+      <div class="grid"></div>
+      <div class="settings">
+        <input class="color--picker" type="color" value="#333333"/>
+        <button class="random">Random</button>
+        <button class="eraser">Eraser</button>
+        <button class="clear">Clear</button>
+        
+        <input name="slider" type="range" value="16" min="1" max="64"/>
+        <label for="slider">16 ✕ 16</label>
+      </div>
+    </main>
+    <footer class="footer">
+      <p>
+        Copyright &copy;
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        SEMNIM
+      </p>
+    </footer>
+    <script src="./script.js"></script>
+  </body>
+</html>
