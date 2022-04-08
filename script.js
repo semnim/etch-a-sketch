@@ -6,8 +6,8 @@ const randomColorButton = document.querySelector(".random");
 const filler = document.querySelector(".filler");
 const eraser = document.querySelector(".eraser");
 const clearButton = document.querySelector(".clear");
-const slider = document.querySelector('input[type="range"]');
-const sliderLabel = document.querySelector("label");
+const sizeSlider = document.querySelector('input[name="size--slider"]');
+const sizeSliderLabel = document.querySelector('label[for="size--slider"]');
 
 const settings = document.querySelector(".settings");
 
@@ -78,6 +78,7 @@ function getCellColor(gridCell) {
 
 function fill(target) {
   let gridCellsArray2D = toMatrix(gridArray, size);
+  
   let [x, y] = getCoordinates(target);
   let cellColor = getCellColor(gridCellsArray2D[y][x]);
 
@@ -121,6 +122,7 @@ const rgb2hex = (rgb) =>
     .slice(1)
     .map((n) => parseInt(n, 10).toString(16).padStart(2, "0"))
     .join("")}`;
+
 function toMatrix(array, width) {
   return array.reduce(function (rows, key, index) {
     return (
@@ -152,7 +154,7 @@ function clearGrid(e) {
 clearButton.addEventListener("click", clearGrid);
 
 // Size
-slider.addEventListener("change", (e) => {
+sizeSlider.addEventListener("change", (e) => {
   size = e.target.value;
   updateSliderLabel();
   clearGrid();
@@ -176,7 +178,9 @@ function initGrid() {
 function getSize() {}
 
 function updateSliderLabel() {
-  sliderLabel.textContent = `${size} x ${size}`;
+  sizeSliderLabel.textContent = `${size} x ${size}`;
 }
 /* Script */
 initGrid();
+
+// TODO Brush tool mit radius
