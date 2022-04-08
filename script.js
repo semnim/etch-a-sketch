@@ -75,28 +75,20 @@ function getCellColor(gridCell) {
     }
   return cellColor;
 }
+
 function fill(target) {
   let gridCellsArray2D = toMatrix(gridArray, size);
   let [x, y] = getCoordinates(target);
   let cellColor = getCellColor(gridCellsArray2D[y][x]);
+
+  if (cellColor === colorPicker.value) return;
   target.style.backgroundColor = colorPicker.value;
+
   let adjacentCells = getAdjacentCells(gridCellsArray2D, x, y);
-  
-  while (adjacentCells.length > 0 && adjacentCells.length <= size * size * size) {
-    let toAdd = [];
-    for (cell of adjacentCells) {
-      if (getCellColor(cell) === cellColor) {
-        toAdd.push(cell);
-      }
-      adjacentCells.splice(adjacentCells.indexOf(cell), 1);
+  for (cell of adjacentCells) {
+    if (getCellColor(cell) === cellColor) {
+      fill(cell);
     }
-    for (cell of toAdd) {
-      console.log(toAdd);
-      cell.style.backgroundColor = colorPicker.value;
-      let [nextX, nextY] = getCoordinates(cell);
-      adjacentCells.push(...getAdjacentCells(gridCellsArray2D, nextX, nextY));
-    }
-      
   }
 }
 function getCoordinates(cell) {
