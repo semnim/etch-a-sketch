@@ -1,15 +1,18 @@
 /* Constants & Variables*/
 const grid = document.querySelector(".grid");
-const gridCells = document.querySelectorAll(".grid-item");
+
 const colorPicker = document.querySelector(".color--picker");
 const randomColorButton = document.querySelector(".random");
-const eraser = document.querySelector(".eraser")
+const filler = document.querySelector(".filler");
+const eraser = document.querySelector(".eraser");
 const clearButton = document.querySelector(".clear");
 const slider = document.querySelector('input[type="range"]');
 const sliderLabel = document.querySelector("label");
+
 const settings = document.querySelector(".settings");
 
 const DEFAULT_SIZE = 16;
+let gridArray;
 let size = DEFAULT_SIZE;
 let backgroundColor = "#333333";
 let mouseDown = false;
@@ -25,24 +28,12 @@ function draw(e) {
   if (e.type === "mouseover" && !mouseDown) {
     return;
   }
-  e.target.style.backgroundColor = backgroundColor;
+  if (filler.classList.contains("active")) {
+    fill(e.target);
+  } else {
+    e.target.style.backgroundColor = backgroundColor;
+  }
 }
-
-// Size
-slider.addEventListener("change", (e) => {
-  size = e.target.value;
-  updateSliderLabel();
-  clearGrid();
-});
-
-// Clear
-function clearGrid(e) {
-  grid.innerHTML = "";
-  initGrid();
-  eraser.classList.remove("active");
-  backgroundColor = colorPicker.value;
-}
-clearButton.addEventListener("click", clearGrid);
 
 // Pick color
 colorPicker.addEventListener("input", (e) => {
@@ -51,12 +42,6 @@ colorPicker.addEventListener("input", (e) => {
 colorPicker.onchange = function () {
   colorPicker.value = colorPicker.value;
 };
-
-// Erase
-eraser.addEventListener("click", () => {
-    backgroundColor = "var(--primary-light)";
-    eraser.classList.toggle("active");
-})
 
 // Random color
 randomColorButton.addEventListener("click", randomColor);
@@ -71,6 +56,116 @@ function randomColor() {
   backgroundColor = hexColor;
   eraser.classList.remove("active");
 }
+
+// Fill
+filler.addEventListener("click", (e) => {
+  if (filler.classList.contains("active")) {
+    filler.classList.remove("active");
+    backgroundColor = colorPicker.value;
+  } else {
+    filler.classList.add("active");
+  }
+});
+function getCellColor(gridCell) {
+  let cellColor = gridCell.style.backgroundColor;
+    if (cellColor === "") {
+      cellColor = "#cec8b600";
+    } else {
+      cellColor = rgb2hex(cellColor);
+    }
+  return cellColor;
+}
+function fill(target) {
+  let gridCellsArray2D = toMatrix(gridArray, size);
+  let [x, y] = getCoordinates(target);
+  let cellColor = getCellColor(gridCellsArray2D[y][x]);
+  target.style.backgroundColor = colorPicker.value;
+  let adjacentCells = getAdjacentCells(gridCellsArray2D, x, y);
+  
+  while (adjacentCells.length > 0 && adjacentCells.length <= size * size * size) {
+    let toAdd = [];
+    for (cell of adjacentCells) {
+      if (getCellColor(cell) === cellColor) {
+        toAdd.push(cell);
+      }
+      adjacentCells.splice(adjacentCells.indexOf(cell), 1);
+    }
+    for (cell of toAdd) {
+      console.log(toAdd);
+      cell.style.backgroundColor = colorPicker.value;
+      let [nextX, nextY] = getCoordinates(cell);
+      adjacentCells.push(...getAdjacentCells(gridCellsArray2D, nextX, nextY));
+    }
+      
+  }
+}
+function getCoordinates(cell) {
+  let cellCoordinates = Array.from(cell.parentElement.children).indexOf(cell);
+  let x = cellCoordinates % size;
+  let y = Math.floor(cellCoordinates / size);
+  return [x, y];
+} 
+function getAdjacentCells(gridCellsArray2D, x, y) {
+  
+  let adjacentCells = [];
+  if (x > 0) {
+    adjacentCells.push(gridCellsArray2D[y][x - 1]);
+  }
+  if (x < size - 1) {
+    adjacentCells.push(gridCellsArray2D[y][x + 1]);
+  }
+  if (y > 0) {
+    adjacentCells.push(gridCellsArray2D[y - 1][x]);
+  }
+  if (y < size - 1) {
+    adjacentCells.push(gridCellsArray2D[y + 1][x]);
+  }
+  return adjacentCells;
+}
+
+const rgb2hex = (rgb) =>
+  `#${rgb
+    .match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+    .slice(1)
+    .map((n) => parseInt(n, 10).toString(16).padStart(2, "0"))
+    .join("")}`;
+function toMatrix(array, width) {
+  return array.reduce(function (rows, key, index) {
+    return (
+      (index % width == 0
+        ? rows.push([key])
+        : rows[rows.length - 1].push(key)) && rows
+    );
+  }, []);
+}
+
+// Erase
+eraser.addEventListener("click", () => {
+  if (eraser.classList.contains("active")) {
+    eraser.classList.remove("active");
+    backgroundColor = colorPicker.value;
+  } else {
+    eraser.classList.add("active");
+    backgroundColor = "var(--primary-light)";
+  }
+});
+
+// Clear
+function clearGrid(e) {
+  grid.innerHTML = "";
+  initGrid();
+  eraser.classList.remove("active");
+  backgroundColor = colorPicker.value;
+}
+clearButton.addEventListener("click", clearGrid);
+
+// Size
+slider.addEventListener("change", (e) => {
+  size = e.target.value;
+  updateSliderLabel();
+  clearGrid();
+});
+
 /* functions */
 function initGrid() {
   grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
@@ -83,6 +178,7 @@ function initGrid() {
     gridCell.addEventListener("mouseover", draw);
     grid.appendChild(gridCell);
   }
+  gridArray = Array.from(document.querySelectorAll(".grid-item"));
 }
 
 function getSize() {}

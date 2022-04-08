@@ -6,7 +6,7 @@
   font-family: inherit;
 }
 :root {
-    --primary-light: rgba(206, 200, 182, 0);
+    --primary-light: #cec8b600;
     --primary-dark: #322f2f;
 }
 
