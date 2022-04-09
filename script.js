@@ -10,9 +10,10 @@ filler.textContent = "Fill";
 randomColorButton.after(filler);
 const eraser = document.querySelector(".eraser");
 const clearButton = document.querySelector(".clear");
-const sizeSlider = document.querySelector('input[name="size--slider"]');
-const sizeSliderLabel = document.querySelector('label[for="size--slider"]');
+let sizeSlider;
+let sizeSliderLabel;
 const settings = document.querySelector(".settings");
+addSizeSlider();
 const DEFAULT_SIZE = 16;
 let gridArray;
 let size = DEFAULT_SIZE;
@@ -23,6 +24,28 @@ const ctx = canvas.getContext('2d');
 let mousePosition = { x: 0, y: 0 };
 let canvasInitialized = false;
 
+function removeSizeSlider() {
+  sizeSlider.remove();
+  sizeSliderLabel.remove();
+}
+function addSizeSlider() {
+  sizeSlider = document.createElement("input");
+  sizeSlider.type = "range";
+  sizeSlider.name = "size--slider";
+  sizeSlider.value = 16;
+  sizeSlider.min = 1;
+  sizeSlider.max = 64;
+  sizeSliderLabel = document.createElement("label");
+  sizeSliderLabel.textContent = "16 ✕ 16";
+
+  sizeSlider.addEventListener("change", (e) => {
+    size = e.target.value;
+    updateSliderLabel();
+    clearGrid();
+  });
+  settings.appendChild(sizeSlider);
+  settings.appendChild(sizeSliderLabel);
+}
 /* EventListeners */
 
 // Toggleswitch for mode
@@ -32,11 +55,13 @@ toggleSwitch.addEventListener('change', () => {
     initCanvas();
     document.querySelector(".switch--description").textContent = "Paint mode";
     filler.remove();
+    removeSizeSlider();
   } else {
     uninitCanvas();
     if (canvasInitialized) {
       initGridCellListeners();
-    } 
+    }
+    addSizeSlider(); 
     randomColorButton.after(filler);
     document.querySelector(".switch--description").textContent = "Pixel mode";
   }
@@ -192,13 +217,6 @@ clearButton.addEventListener("click", () => {
   } else {
     clearGrid();
   }
-});
-
-// Size
-sizeSlider.addEventListener("change", (e) => {
-  size = e.target.value;
-  updateSliderLabel();
-  clearGrid();
 });
 
 /* functions */
